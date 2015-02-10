@@ -9,11 +9,12 @@
         {"http://rest.api/dogs/1"
          {:get (fn [req] {:status 200
                           :headers {}
-                          :body "{'id':1"})}}
+                          :body "{'id':1}"})}}
 
         ((make-service-broker {:dogs "http://rest.api/dogs/:id"})
          :resource-name :dogs
          :url-params {:id 1}
          :request-options {:method :get
                            :headers {}})
-        => "yep"))
+        => (contains {:status 200
+                      :body "{'id':1}"})))
