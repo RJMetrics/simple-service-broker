@@ -1,10 +1,10 @@
 (ns simple-service-broker.core
-  (:require [clj-http.client :as client]))
+  (:require [clojure.data.json :as json]
+            [clj-http.client :as client]))
 
 (def default-request-options {:method :get
                               :socket-timeout 500
                               :conn-timeout 5000})
-
 
 (defn- parse-into-url
   "Take a URL formatted as a compojure route (e.g. \"/client/:id\") and parse
@@ -23,7 +23,13 @@
 (defn make-service-broker
   [routes]
   (fn [& {:keys [resource-name url-params request-options]}]
-    (client/request (merge default-request-options
-                           request-options
-                           {:url (parse-into-url (resource-name routes)
-                                                 url-params)}))))
+    (let [req-opts-fixed (if-not (-> request-options :body ((some-fn string? nil?)))
+                           (update-in request-options
+                                      [:body]
+                                      json/write-str)
+                           request-options)]
+      (client/with-middleware [#'client/wrap-request]
+        (client/request (merge default-request-options
+                               req-opts-fixed
+                               {:url (parse-into-url (resource-name routes)
+                                                     url-params)}))))))

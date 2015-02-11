@@ -4,7 +4,8 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
+                 [org.clojure/data.json "0.2.4"]
                  [clj-http "0.9.0"]]
   :profiles {:dev  {:dependencies [[midje "1.6.3"]
-                                  [clj-http-fake "0.7.8"]]
-                   :plugins [[lein-midje "3.1.1"]]}})
+                                   [clj-http-fake "0.7.8"]]
+                    :plugins [[lein-midje "3.1.1"]]}})
