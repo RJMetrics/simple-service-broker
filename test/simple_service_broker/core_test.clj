@@ -3,19 +3,23 @@
             [simple-service-broker.core :refer :all]
             [clj-http.fake :as fake]))
 
+(def routing-table {:dogs {:get-single {:path "http://rest.api/dogs/:id"
+                                        :method :get}
+                           :put {:path "http://rest.api/dogs/:id"
+                                 :method :put}}})
 
-(fact "get works"
+(def service-broker (make-service-broker routing-table))
+(fact "get works" :dev
       (fake/with-fake-routes-in-isolation
         {"http://rest.api/dogs/1"
          {:get (fn [req] {:status 200
                           :headers {}
                           :body "{'id':1}"})}}
 
-        ((make-service-broker {:dogs "http://rest.api/dogs/:id"})
-         :resource-name :dogs
-         :url-params {:id 1}
-         :request-options {:method :get
-                           :headers {}})
+        (service-broker :resource-name :dogs
+                        :action :get-single
+                        :url-params {:id 1}
+                        :request-options {})
         => (contains {:status 200
                       :body "{'id':1}"})))
 
@@ -26,12 +30,11 @@
                           :headers {}
                           :body "{'id':1}"})}}
 
-        ((make-service-broker {:dogs "http://rest.api/dogs/:id"})
-         :resource-name :dogs
-         :url-params {:id 1}
-         :request-options {:method :put
-                           :headers {}
-                           :body {:a 34}})
+        (service-broker :resource-name :dogs
+                        :action :put
+                        :url-params {:id 1}
+                        :request-options {:headers {}
+                                          :body {:a 34}})
         => (contains {:status 200
                       :body "{'id':1}"})))
 
@@ -43,11 +46,10 @@
                           :headers {}
                           :body "{'id':1}"})}}
 
-        ((make-service-broker {:dogs "http://rest.api/dogs/:id"})
-         :resource-name :dogs
-         :url-params {:id 1}
-         :request-options {:method :put
-                           :headers {}
-                           :body "{\"a\":34}"})
+        (service-broker :resource-name :dogs
+                        :action :put
+                        :url-params {:id 1}
+                        :request-options {:headers {}
+                                          :body "{\"a\":34}"})
         => (contains {:status 200
                       :body "{'id':1}"})))

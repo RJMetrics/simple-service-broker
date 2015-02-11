@@ -20,16 +20,20 @@
               ""
               split-url))))
 
+
+
 (defn make-service-broker
   [routes]
-  (fn [& {:keys [resource-name url-params request-options]}]
+  (fn [& {:keys [resource-name action url-params request-options]}]
     (let [req-opts-fixed (if-not (-> request-options :body ((some-fn string? nil?)))
                            (update-in request-options
                                       [:body]
                                       json/write-str)
-                           request-options)]
+                           request-options)
+          action-spec (-> routes resource-name action)]
       (client/with-middleware [#'client/wrap-request]
         (client/request (merge default-request-options
+                               {:method (get action-spec :method :get)}
                                req-opts-fixed
-                               {:url (parse-into-url (resource-name routes)
+                               {:url (parse-into-url (:path action-spec)
                                                      url-params)}))))))
