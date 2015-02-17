@@ -41,7 +41,7 @@ The argument list uses named arguments. These are:
 - :url-params
   - A hash map of values to be substituted into the url template.
 - :request-options
-  - This is a configuration hash map of the type that could be passed to [clj-http.client](http://github.com/#######). This should support the following optional keys:
+  - This is a configuration hash map of the type that could be passed to [clj-http.client](https://github.com/dakrone/clj-http). This should support the following optional keys:
     - :headers
       - A hash map of HTTP headers to be included in the outgoing request.
     - :body
